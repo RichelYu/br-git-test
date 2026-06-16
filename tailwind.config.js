@@ -4,31 +4,30 @@ export default {
   theme: {
     extend: {
       colors: {
-        lol: {
-          gold: '#C89B3C',
-          'gold-light': '#F0E6D3',
-          dark: '#010A13',
-          'dark-mid': '#0A1428',
-          blue: '#0BC4E3',
-          'blue-dark': '#1E4C7B',
+        brand: {
+          pink: '#FF6B9D',
+          'pink-deep': '#EC4899',
+          purple: '#A78BFA',
+          sky: '#5EC8F2',
+          peach: '#FFB088',
+          cream: '#FFF9FB',
         }
       },
       fontFamily: {
-        lol: ['"Cinzel"', 'serif'],
+        round: ['"Baloo 2"', '"Noto Sans SC"', 'sans-serif'],
       },
       animation: {
         'float': 'float 3s ease-in-out infinite',
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'shimmer': 'shimmer 2s linear infinite',
+        'pop': 'pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
       },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-8px)' },
         },
-        shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
+        pop: {
+          '0%': { transform: 'scale(0.8)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
         }
       }
     }

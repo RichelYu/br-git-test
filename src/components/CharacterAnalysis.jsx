@@ -62,19 +62,19 @@ export default function CharacterAnalysis({ scores, personality, summonerName })
   return (
     <div className="space-y-6">
       {/* Archetype Header */}
-      <div className="text-center p-5 rounded-xl gold-border card-bg">
-        <div className="text-3xl mb-2">
+      <div className="text-center p-6 rounded-2xl card-soft animate-pop">
+        <div className="text-4xl mb-2 animate-float">
           {personality.flirtRating.emoji}
         </div>
-        <h3 className="text-xl font-bold text-lol-gold mb-1">{personality.archetype}</h3>
-        <p className="text-sm text-gray-400">{personality.archetypeDesc}</p>
-        <div className={`mt-3 text-sm font-medium ${personality.flirtRating.color}`}>
-          花心等级: {personality.flirtRating.level}
+        <h3 className="text-2xl font-bold text-gradient mb-1">{personality.archetype}</h3>
+        <p className="text-sm text-slate-500">{personality.archetypeDesc}</p>
+        <div className={`mt-3 inline-block chip bg-white ${personality.flirtRating.color}`}>
+          花心等级 · {personality.flirtRating.level}
         </div>
       </div>
 
       {/* Score Rings */}
-      <div className="grid grid-cols-3 gap-4 p-4 rounded-xl gold-border card-bg">
+      <div className="grid grid-cols-3 gap-4 p-4 rounded-2xl card">
         {SCORE_CONFIGS.map(({ key, label, color }) => (
           <ScoreRing
             key={key}
@@ -92,12 +92,12 @@ export default function CharacterAnalysis({ scores, personality, summonerName })
           const val = scores[key]
           const isHigh = val >= 55
           return (
-            <div key={key} className="p-3 rounded-lg gold-border card-bg">
+            <div key={key} className="p-3.5 rounded-2xl card">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Icon className="w-4 h-4" style={{ color }} />
-                  <span className="text-sm font-medium text-gray-300">{label}</span>
-                  <span className="text-xs text-gray-500">— {desc}</span>
+                  <span className="text-sm font-semibold text-slate-700">{label}</span>
+                  <span className="text-xs text-slate-400">— {desc}</span>
                 </div>
                 <span className="text-sm font-bold" style={{ color }}>{val}</span>
               </div>
@@ -106,11 +106,11 @@ export default function CharacterAnalysis({ scores, personality, summonerName })
                   className="score-bar-fill"
                   style={{
                     width: `${val}%`,
-                    background: `linear-gradient(90deg, ${color}80, ${color})`,
+                    background: `linear-gradient(90deg, ${color}99, ${color})`,
                   }}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-slate-400 mt-1.5">
                 {isHigh ? highText : lowText}
               </p>
             </div>
@@ -119,26 +119,26 @@ export default function CharacterAnalysis({ scores, personality, summonerName })
       </div>
 
       {/* Verdict */}
-      <div className="p-4 rounded-xl border border-lol-gold/30 bg-lol-gold/5">
-        <h4 className="text-sm font-bold text-lol-gold mb-2">综合判断</h4>
-        <p className="text-sm text-gray-300">{personality.verdict}</p>
+      <div className="p-5 rounded-2xl card-soft">
+        <h4 className="text-sm font-bold text-brand-pink-deep mb-2">💖 综合判断</h4>
+        <p className="text-sm text-slate-600">{personality.verdict}</p>
         {personality.nightLabel && (
-          <p className="text-sm text-gray-400 mt-2">{personality.nightLabel}</p>
+          <p className="text-sm text-slate-500 mt-2">{personality.nightLabel}</p>
         )}
         {personality.partnerNote && (
-          <p className="text-sm text-gray-400 mt-2">{personality.partnerNote}</p>
+          <p className="text-sm text-slate-500 mt-2">{personality.partnerNote}</p>
         )}
       </div>
 
       {/* Tips */}
-      <div className="p-4 rounded-xl border border-gray-700 bg-gray-900/30">
-        <h4 className="text-sm font-bold text-gray-400 mb-2">分析小贴士</h4>
+      <div className="p-5 rounded-2xl bg-purple-50/60 border border-purple-100">
+        <h4 className="text-sm font-bold text-purple-500 mb-2">分析小贴士</h4>
         <ul className="space-y-1">
           {personality.tips.map((tip, i) => (
-            <li key={i} className="text-xs text-gray-500">{tip}</li>
+            <li key={i} className="text-xs text-slate-500">{tip}</li>
           ))}
         </ul>
-        <p className="text-xs text-gray-600 mt-3 border-t border-gray-800 pt-3">
+        <p className="text-xs text-slate-400 mt-3 border-t border-purple-100 pt-3">
           ⚠️ 本分析仅供娱乐，游戏行为不能完全代表真实性格，请理性参考。
         </p>
       </div>

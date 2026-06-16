@@ -1,15 +1,13 @@
-import { Trophy, Clock, Swords } from 'lucide-react'
+import { Clock, Swords } from 'lucide-react'
 
-const RANK_COLORS = ['text-yellow-400', 'text-gray-300', 'text-amber-600', 'text-gray-400', 'text-gray-500']
-const RANK_BG = ['bg-yellow-400/10', 'bg-gray-300/10', 'bg-amber-600/10', 'bg-gray-400/5', 'bg-gray-500/5']
+const RANK_BG = ['bg-pink-50', 'bg-purple-50', 'bg-sky-50', 'bg-slate-50', 'bg-slate-50']
+const RANK_TEXT = ['text-brand-pink-deep', 'text-purple-500', 'text-sky-500', 'text-slate-400', 'text-slate-400']
 
 function WinRateBadge({ rate }) {
-  const color = rate >= 60 ? 'text-green-400 bg-green-400/10' :
-                rate >= 50 ? 'text-blue-400 bg-blue-400/10' :
-                'text-red-400 bg-red-400/10'
-  return (
-    <span className={`badge ${color}`}>{rate}%</span>
-  )
+  const color = rate >= 60 ? 'text-emerald-600 bg-emerald-50' :
+                rate >= 50 ? 'text-sky-600 bg-sky-50' :
+                'text-rose-500 bg-rose-50'
+  return <span className={`chip ${color}`}>{rate}%</span>
 }
 
 export default function CoPlayersTable({ players, totalGames }) {
@@ -18,9 +16,9 @@ export default function CoPlayersTable({ players, totalGames }) {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2 mb-4">
-        <Swords className="w-4 h-4 text-lol-gold" />
-        <h3 className="text-sm font-semibold text-lol-gold">常驻开黑搭档</h3>
-        <span className="text-xs text-gray-500 ml-auto">共 {totalGames} 场</span>
+        <Swords className="w-4 h-4 text-brand-pink" />
+        <h3 className="text-sm font-bold text-slate-700">常驻开黑搭档</h3>
+        <span className="text-xs text-slate-400 ml-auto">共 {totalGames} 场</span>
       </div>
 
       {players.map((player, i) => {
@@ -28,17 +26,15 @@ export default function CoPlayersTable({ players, totalGames }) {
         return (
           <div
             key={player.puuid}
-            className={`flex items-center gap-3 p-3 rounded-lg ${RANK_BG[Math.min(i, 4)]} gold-border hover:bg-white/5 transition-colors`}
+            className={`flex items-center gap-3 p-3 rounded-xl ${RANK_BG[Math.min(i, 4)]} hover:brightness-95 transition-all`}
           >
-            {/* Rank */}
-            <span className={`text-sm font-bold w-5 text-center ${RANK_COLORS[Math.min(i, 4)]}`}>
+            <span className={`text-sm font-bold w-5 text-center ${RANK_TEXT[Math.min(i, 4)]}`}>
               {i === 0 ? '👑' : i + 1}
             </span>
 
-            {/* Name & champion */}
             <div className="flex-1 min-w-0">
-              <div className="font-medium text-gray-200 text-sm truncate">{player.name}</div>
-              <div className="text-xs text-gray-500 flex items-center gap-1">
+              <div className="font-semibold text-slate-700 text-sm truncate">{player.name}</div>
+              <div className="text-xs text-slate-400 flex items-center gap-1">
                 <span>{player.topChampion}</span>
                 <span>·</span>
                 <Clock className="w-3 h-3" />
@@ -46,11 +42,10 @@ export default function CoPlayersTable({ players, totalGames }) {
               </div>
             </div>
 
-            {/* Stats */}
             <div className="flex items-center gap-3 shrink-0">
               <div className="text-right">
-                <div className="text-sm font-semibold text-gray-200">{player.count} 场</div>
-                <div className="text-xs text-gray-500">{pct}% 占比</div>
+                <div className="text-sm font-bold text-slate-700">{player.count} 场</div>
+                <div className="text-xs text-slate-400">{pct}% 占比</div>
               </div>
               <WinRateBadge rate={player.winRate} />
             </div>
@@ -59,26 +54,26 @@ export default function CoPlayersTable({ players, totalGames }) {
       })}
 
       {/* Bar visualization for top 5 */}
-      <div className="mt-4 pt-4 border-t border-gray-800">
-        <p className="text-xs text-gray-500 mb-3">开黑频率分布</p>
+      <div className="mt-4 pt-4 border-t border-pink-100">
+        <p className="text-xs text-slate-400 mb-3">开黑频率分布</p>
         {players.slice(0, 5).map((player, i) => {
           const pct = Math.round((player.count / totalGames) * 100)
           const maxPct = Math.round((players[0].count / totalGames) * 100)
           return (
             <div key={player.puuid} className="flex items-center gap-2 mb-2">
-              <span className="text-xs text-gray-500 w-16 truncate">{player.name}</span>
+              <span className="text-xs text-slate-500 w-16 truncate">{player.name}</span>
               <div className="flex-1 score-bar">
                 <div
                   className="score-bar-fill"
                   style={{
                     width: `${(pct / maxPct) * 100}%`,
                     background: i === 0
-                      ? 'linear-gradient(90deg, #C89B3C, #F0E6D3)'
-                      : `rgba(200, 155, 60, ${0.6 - i * 0.1})`,
+                      ? 'linear-gradient(90deg, #FF6B9D, #A78BFA)'
+                      : `rgba(255, 107, 157, ${0.7 - i * 0.12})`,
                   }}
                 />
               </div>
-              <span className="text-xs text-gray-400 w-8 text-right">{pct}%</span>
+              <span className="text-xs text-slate-500 w-8 text-right">{pct}%</span>
             </div>
           )
         })}

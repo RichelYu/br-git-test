@@ -6,12 +6,21 @@ const PLATFORM_TO_REGION = {
   oc1: 'sea', ph2: 'sea', sg2: 'sea', th2: 'sea', tw2: 'sea', vn2: 'sea',
 }
 
+// 国服 (cn) 由腾讯运营，不在 Riot 公共 API 覆盖范围，仅支持演示模式。
+// 其余为 Riot 直营服，可用官方 API 真实查询。
 const PLATFORM_LABELS = {
-  na1: '北美 (NA)', br1: '巴西 (BR)', la1: '拉美北 (LAN)', la2: '拉美南 (LAS)',
-  kr: '韩国 (KR)', jp1: '日本 (JP)',
-  eun1: '欧洲北欧 (EUNE)', euw1: '欧洲西部 (EUW)', tr1: '土耳其 (TR)', ru: '俄罗斯 (RU)',
-  oc1: '大洋洲 (OCE)',
+  cn: '🇨🇳 国服 (腾讯 · 仅演示)',
+  kr: '🇰🇷 韩服 (KR)',
+  jp1: '🇯🇵 日服 (JP)',
+  tw2: '🇹🇼 台服 (TW)',
+  na1: '🇺🇸 美服 (NA)',
+  euw1: '🇪🇺 欧服西 (EUW)',
+  eun1: '🇪🇺 欧服东 (EUNE)',
+  oc1: '🇦🇺 大洋洲 (OCE)',
 }
+
+// 仅支持演示模式（无 Riot 官方 API）的服务器
+const DEMO_ONLY_PLATFORMS = ['cn']
 
 function getPlatformHost(platform) {
   return `https://${platform}.api.riotgames.com`
@@ -58,4 +67,4 @@ export async function getLeagueEntries(summonerId, platform, apiKey) {
   return riotFetch(`${host}/lol/league/v4/entries/by-summoner/${summonerId}`, apiKey)
 }
 
-export { PLATFORM_LABELS, PLATFORM_TO_REGION }
+export { PLATFORM_LABELS, PLATFORM_TO_REGION, DEMO_ONLY_PLATFORMS }

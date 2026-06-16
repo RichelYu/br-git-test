@@ -192,11 +192,11 @@ function generatePersonality(scores, isNightOwl, topCoPlayers, totalUniquePlayer
 
   // "花心指数" rating text
   let flirtRating
-  if (playerScore < 20) flirtRating = { level: '专情钻石', emoji: '💎', color: 'text-blue-400' }
-  else if (playerScore < 40) flirtRating = { level: '比较专一', emoji: '💙', color: 'text-cyan-400' }
-  else if (playerScore < 60) flirtRating = { level: '适度社交', emoji: '💚', color: 'text-green-400' }
-  else if (playerScore < 80) flirtRating = { level: '广泛社交', emoji: '🧡', color: 'text-orange-400' }
-  else flirtRating = { level: '万人迷', emoji: '❤️‍🔥', color: 'text-red-400' }
+  if (playerScore < 20) flirtRating = { level: '专情钻石', emoji: '💎', color: 'text-sky-600' }
+  else if (playerScore < 40) flirtRating = { level: '比较专一', emoji: '💙', color: 'text-cyan-600' }
+  else if (playerScore < 60) flirtRating = { level: '适度社交', emoji: '💚', color: 'text-emerald-600' }
+  else if (playerScore < 80) flirtRating = { level: '广泛社交', emoji: '🧡', color: 'text-orange-500' }
+  else flirtRating = { level: '万人迷', emoji: '❤️‍🔥', color: 'text-rose-500' }
 
   return {
     archetype,

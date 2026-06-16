@@ -25,19 +25,19 @@ export default function ChampionBadges({ champions }) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
-        <Sword className="w-4 h-4 text-lol-gold" />
-        <h3 className="text-sm font-semibold text-lol-gold">常用英雄</h3>
+        <Sword className="w-4 h-4 text-brand-pink" />
+        <h3 className="text-sm font-bold text-slate-700">常用英雄</h3>
       </div>
       <div className="flex flex-wrap gap-2">
         {champions.map(({ name, count, rate }) => (
           <div
             key={name}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg gold-border bg-gray-900/50"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-pink-50 border border-pink-100"
           >
             <ChampIcon name={name} />
             <div>
-              <div className="text-sm font-medium text-gray-200">{name}</div>
-              <div className="text-xs text-gray-500">{count}场 · {rate}%</div>
+              <div className="text-sm font-semibold text-slate-700">{name}</div>
+              <div className="text-xs text-slate-400">{count}场 · {rate}%</div>
             </div>
           </div>
         ))}
