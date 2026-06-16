@@ -13,7 +13,7 @@ const SCORE_CONFIGS = [
   },
   {
     key: 'playerScore',
-    label: '花心指数',
+    label: '老色批指数',
     icon: Star,
     color: '#f97316',
     desc: '开黑对象的多样程度',
@@ -69,7 +69,7 @@ export default function CharacterAnalysis({ scores, personality, summonerName })
         <h3 className="text-2xl font-bold text-gradient mb-1">{personality.archetype}</h3>
         <p className="text-sm text-slate-500">{personality.archetypeDesc}</p>
         <div className={`mt-3 inline-block chip bg-white ${personality.flirtRating.color}`}>
-          花心等级 · {personality.flirtRating.level}
+          老色批等级 · {personality.flirtRating.level}
         </div>
       </div>
 

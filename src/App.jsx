@@ -158,7 +158,7 @@ export default function App() {
               {[
                 { icon: '🔍', title: '战绩深析', desc: '分析最近50场排位赛数据' },
                 { icon: '👥', title: '搭档图谱', desc: '发现最常一起开黑的人' },
-                { icon: '💞', title: '性格评估', desc: '游戏专情指数·花心指数' },
+                { icon: '💞', title: '性格评估', desc: '游戏专情指数·老色批指数' },
               ].map(f => (
                 <div key={f.title} className="p-5 rounded-2xl card text-center hover:-translate-y-1 transition-transform">
                   <div className="text-3xl mb-2">{f.icon}</div>
