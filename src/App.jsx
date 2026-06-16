@@ -8,6 +8,7 @@ import HourChart from './components/HourChart'
 import ChampionBadges from './components/ChampionBadges'
 import { getSummonerByName, getMatchIds, getMatch } from './services/riotApi'
 import { analyzeMatches, generateMockData } from './services/analyzer'
+import { analyzeWithClient } from './services/lcuClient'
 
 const TABS = [
   { id: 'overview', label: '数据总览' },
@@ -51,7 +52,7 @@ export default function App() {
   const [summonerInfo, setSummonerInfo] = useState(null)
   const [activeTab, setActiveTab] = useState('overview')
 
-  const handleSearch = useCallback(async ({ summonerName, platform, apiKey, demoMode }) => {
+  const handleSearch = useCallback(async ({ summonerName, platform, apiKey, demoMode, clientMode }) => {
     setState('loading')
     setError('')
     setActiveTab('overview')
@@ -60,7 +61,13 @@ export default function App() {
       let matches
       let summoner = { name: summonerName, summonerLevel: '??', profileIconId: 0 }
 
-      if (demoMode) {
+      if (clientMode) {
+        // 桌面版：连接本地英雄联盟客户端查询国服真实战绩
+        setLoadingMsg('正在连接英雄联盟客户端...')
+        const result = await analyzeWithClient(summonerName)
+        matches = result.matches
+        summoner = result.summoner
+      } else if (demoMode) {
         setLoadingMsg('生成演示数据...')
         await new Promise(r => setTimeout(r, 800))
         matches = generateMockData(summonerName)

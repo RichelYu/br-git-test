@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Search, Key, Globe, Info, Sparkles } from 'lucide-react'
+import { Search, Key, Globe, Info, Sparkles, MonitorSmartphone } from 'lucide-react'
 import { PLATFORM_LABELS, DEMO_ONLY_PLATFORMS } from '../services/riotApi'
+import { isDesktop } from '../services/lcuClient'
 
 export default function SearchForm({ onSearch, loading }) {
   const [summonerName, setSummonerName] = useState('')
@@ -9,7 +10,9 @@ export default function SearchForm({ onSearch, loading }) {
   const [showApiHelp, setShowApiHelp] = useState(false)
   const [demoMode, setDemoMode] = useState(true)
 
-  const isDemoOnly = DEMO_ONLY_PLATFORMS.includes(platform)
+  // 桌面版下，国服可连接客户端真实查询；网页版国服仅演示
+  const isCnClient = isDesktop && platform === 'cn'
+  const isDemoOnly = DEMO_ONLY_PLATFORMS.includes(platform) && !isCnClient
 
   // 国服等仅演示服务器：强制开启演示模式
   useEffect(() => {
@@ -18,12 +21,17 @@ export default function SearchForm({ onSearch, loading }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!summonerName.trim()) return
+    if (!isCnClient && !summonerName.trim()) return
+    if (isCnClient) {
+      // 国服客户端查询：名称可留空（查当前登录召唤师）
+      onSearch({ summonerName: summonerName.trim(), platform, clientMode: true })
+      return
+    }
     const effectiveDemo = isDemoOnly ? true : demoMode
     onSearch({ summonerName: summonerName.trim(), platform, apiKey: apiKey.trim(), demoMode: effectiveDemo })
   }
 
-  const showApiKeyInput = !demoMode && !isDemoOnly
+  const showApiKeyInput = !demoMode && !isDemoOnly && !isCnClient
 
   return (
     <div className="w-full max-w-xl mx-auto">
@@ -35,7 +43,7 @@ export default function SearchForm({ onSearch, loading }) {
             type="text"
             value={summonerName}
             onChange={e => setSummonerName(e.target.value)}
-            placeholder="召唤师名称 / Summoner Name"
+            placeholder={isCnClient ? '召唤师名称（留空＝查当前登录账号）' : '召唤师名称 / Summoner Name'}
             className="input-field pl-10"
             disabled={loading}
           />
@@ -51,18 +59,31 @@ export default function SearchForm({ onSearch, loading }) {
             disabled={loading}
           >
             {Object.entries(PLATFORM_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
+              <option key={key} value={key}>
+                {key === 'cn' && isDesktop ? '🇨🇳 国服 (腾讯 · 客户端实测)' : label}
+              </option>
             ))}
           </select>
         </div>
 
-        {/* 国服提示 */}
+        {/* 国服提示（网页版：仅演示） */}
         {isDemoOnly && (
           <div className="text-xs text-pink-500 bg-pink-50 rounded-xl p-3 border border-pink-100 flex items-start gap-2">
             <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
             <span>
               国服由腾讯运营，<b>没有 Riot 官方 API</b> 可查询真实战绩，已自动切换为演示模式。
-              想查真实数据请选择韩服 / 日服 / 美服等 Riot 直营服。
+              想查真实数据请选择韩服 / 日服 / 美服等 Riot 直营服，或使用<b>桌面版</b>连接客户端查国服。
+            </span>
+          </div>
+        )}
+
+        {/* 国服提示（桌面版：连客户端实测） */}
+        {isCnClient && (
+          <div className="text-xs text-emerald-600 bg-emerald-50 rounded-xl p-3 border border-emerald-100 flex items-start gap-2">
+            <MonitorSmartphone className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+            <span>
+              桌面版已就绪：将<b>连接本机英雄联盟客户端</b>读取国服真实战绩。
+              请确保客户端<b>已启动并登录</b>，无需 API Key。
             </span>
           </div>
         )}
@@ -83,7 +104,7 @@ export default function SearchForm({ onSearch, loading }) {
         )}
 
         {/* API Key Help */}
-        {!isDemoOnly && (
+        {!isDemoOnly && !isCnClient && (
           <button
             type="button"
             onClick={() => setShowApiHelp(!showApiHelp)}
@@ -94,7 +115,7 @@ export default function SearchForm({ onSearch, loading }) {
           </button>
         )}
 
-        {showApiHelp && !isDemoOnly && (
+        {showApiHelp && !isDemoOnly && !isCnClient && (
           <div className="text-xs text-slate-500 bg-purple-50/60 rounded-xl p-3.5 border border-purple-100 space-y-1.5 leading-relaxed">
             <p className="font-semibold text-purple-600">Riot API Key 全部免费，没有付费版 👇</p>
             <p>1. 打开 <span className="font-semibold text-brand-pink-deep">developer.riotgames.com</span> 用 Riot 账号登录</p>
@@ -106,7 +127,7 @@ export default function SearchForm({ onSearch, loading }) {
         )}
 
         {/* Demo Mode Toggle */}
-        {!isDemoOnly && (
+        {!isDemoOnly && !isCnClient && (
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -128,13 +149,18 @@ export default function SearchForm({ onSearch, loading }) {
         {/* Submit */}
         <button
           type="submit"
-          disabled={loading || (showApiKeyInput && !apiKey.trim()) || !summonerName.trim()}
+          disabled={loading || (showApiKeyInput && !apiKey.trim()) || (!isCnClient && !summonerName.trim())}
           className="w-full btn-primary disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               分析中...
+            </>
+          ) : isCnClient ? (
+            <>
+              <MonitorSmartphone className="w-4 h-4" />
+              连接客户端查询国服
             </>
           ) : (
             <>
