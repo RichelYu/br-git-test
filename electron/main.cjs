@@ -13,7 +13,7 @@ function createWindow() {
     height: 860,
     minWidth: 420,
     backgroundColor: '#FFF4F8',
-    title: '心动雷达 · 桌面版',
+    title: '峡谷照妖镜 · 桌面版',
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,

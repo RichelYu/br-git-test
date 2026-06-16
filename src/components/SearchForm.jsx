@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, Key, Globe, Info, Sparkles, MonitorSmartphone } from 'lucide-react'
+import { Search, Key, Globe, Info, Sparkles, MonitorSmartphone, Heart } from 'lucide-react'
 import { PLATFORM_LABELS, DEMO_ONLY_PLATFORMS } from '../services/riotApi'
 import { isDesktop } from '../services/lcuClient'
 
@@ -9,6 +9,7 @@ export default function SearchForm({ onSearch, loading }) {
   const [apiKey, setApiKey] = useState('')
   const [showApiHelp, setShowApiHelp] = useState(false)
   const [demoMode, setDemoMode] = useState(true)
+  const [gender, setGender] = useState('') // '' | 'male' | 'female'，用于性别衍生指标
 
   // 桌面版下，国服可连接客户端真实查询；网页版国服仅演示
   const isCnClient = isDesktop && platform === 'cn'
@@ -22,13 +23,14 @@ export default function SearchForm({ onSearch, loading }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!isCnClient && !summonerName.trim()) return
+    const g = gender || undefined
     if (isCnClient) {
       // 国服客户端查询：名称可留空（查当前登录召唤师）
-      onSearch({ summonerName: summonerName.trim(), platform, clientMode: true })
+      onSearch({ summonerName: summonerName.trim(), platform, clientMode: true, gender: g })
       return
     }
     const effectiveDemo = isDemoOnly ? true : demoMode
-    onSearch({ summonerName: summonerName.trim(), platform, apiKey: apiKey.trim(), demoMode: effectiveDemo })
+    onSearch({ summonerName: summonerName.trim(), platform, apiKey: apiKey.trim(), demoMode: effectiveDemo, gender: g })
   }
 
   const showApiKeyInput = !demoMode && !isDemoOnly && !isCnClient
@@ -64,6 +66,34 @@ export default function SearchForm({ onSearch, loading }) {
               </option>
             ))}
           </select>
+        </div>
+
+        {/* TA 的性别（用于海王浓度 / 同性相吸等性别衍生指标） */}
+        <div>
+          <div className="flex items-center gap-1.5 mb-1.5 text-xs text-slate-400">
+            <Heart className="w-3 h-3 text-brand-pink" />
+            TA 的性别 <span className="text-slate-300">(用于「海王浓度」等指标，可不选)</span>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { v: '', label: '不设置' },
+              { v: 'male', label: '男生 ♂' },
+              { v: 'female', label: '女生 ♀' },
+            ].map(opt => (
+              <button
+                key={opt.v}
+                type="button"
+                onClick={() => setGender(opt.v)}
+                className={`py-2 rounded-xl text-sm font-medium transition-all ${
+                  gender === opt.v
+                    ? 'bg-gradient-to-r from-brand-pink to-brand-purple text-white shadow-sm'
+                    : 'bg-white border border-pink-100 text-slate-500 hover:border-brand-pink'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* 国服提示（网页版：仅演示） */}

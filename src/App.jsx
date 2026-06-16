@@ -52,7 +52,7 @@ export default function App() {
   const [summonerInfo, setSummonerInfo] = useState(null)
   const [activeTab, setActiveTab] = useState('overview')
 
-  const handleSearch = useCallback(async ({ summonerName, platform, apiKey, demoMode, clientMode }) => {
+  const handleSearch = useCallback(async ({ summonerName, platform, apiKey, demoMode, clientMode, gender }) => {
     setState('loading')
     setError('')
     setActiveTab('overview')
@@ -70,7 +70,7 @@ export default function App() {
       } else if (demoMode) {
         setLoadingMsg('生成演示数据...')
         await new Promise(r => setTimeout(r, 800))
-        matches = generateMockData(summonerName)
+        matches = generateMockData(summonerName, gender)
         summoner = {
           name: summonerName,
           summonerLevel: 267,
@@ -107,7 +107,7 @@ export default function App() {
 
       setLoadingMsg('计算分析结果...')
       const puuid = summoner.puuid || 'target-puuid'
-      const result = analyzeMatches(matches, puuid)
+      const result = analyzeMatches(matches, puuid, { targetGender: gender })
 
       setSummonerInfo(summoner)
       setAnalysisData(result)
@@ -132,8 +132,8 @@ export default function App() {
               <Heart className="w-4.5 h-4.5 text-white" fill="white" />
             </div>
             <div>
-              <h1 className="text-base font-bold text-gradient leading-none">心动雷达</h1>
-              <p className="text-xs text-slate-400 leading-none mt-0.5">LOL 关系图谱分析</p>
+              <h1 className="text-base font-bold text-gradient leading-none">峡谷照妖镜</h1>
+              <p className="text-xs text-slate-400 leading-none mt-0.5">LOL 渣度鉴定·关系图谱</p>
             </div>
           </div>
           <span className="chip bg-pink-50 text-brand-pink-deep">
@@ -305,6 +305,9 @@ export default function App() {
                 <CharacterAnalysis
                   scores={analysisData.scores}
                   personality={analysisData.personality}
+                  modeStats={analysisData.modeStats}
+                  genderStats={analysisData.genderStats}
+                  hasGenderData={analysisData.hasGenderData}
                   summonerName={summonerInfo?.name}
                 />
               )}

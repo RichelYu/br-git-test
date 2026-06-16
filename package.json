@@ -32,7 +32,7 @@
   },
   "build": {
     "appId": "com.xindongleida.app",
-    "productName": "心动雷达",
+    "productName": "峡谷照妖镜",
     "files": [
       "dist/**/*",
       "electron/**/*"

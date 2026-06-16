@@ -1,5 +1,6 @@
-import { Shield, Heart, Zap, Star, AlertTriangle, CheckCircle } from 'lucide-react'
+import { Shield, Heart, Zap, Star, AlertTriangle, CheckCircle, Snowflake, Coffee, Users2, Waves, Church } from 'lucide-react'
 import ScoreRing from './ScoreRing'
+import { QUEUE_LABELS } from '../services/analyzer'
 
 const SCORE_CONFIGS = [
   {
@@ -58,7 +59,91 @@ const SCORE_CONFIGS = [
   },
 ]
 
-export default function CharacterAnalysis({ scores, personality, summonerName }) {
+// 模式人格指标（犀利 + 抽象）
+const MODE_SCORE_CONFIGS = [
+  {
+    key: 'insulatorScore', label: '情感绝缘体', icon: Snowflake, color: '#38bdf8',
+    desc: '单双排独自上分、拒绝开黑',
+    highText: '钢筋水泥级绝缘，亲密关系生人勿近',
+    lowText: '愿意与人同行，没那么孤僻',
+  },
+  {
+    key: 'aramSeniorScore', label: '峡谷老年人', icon: Coffee, color: '#f59e0b',
+    desc: '大乱斗养生局占比',
+    highText: '峡谷养老院常驻，佛系摆烂随缘',
+    lowText: '还在峡谷里拼杀，未到退休年纪',
+  },
+  {
+    key: 'herdScore', label: '群居刚需', icon: Users2, color: '#22c55e',
+    desc: '灵活组排（必须组队）占比',
+    highText: '离了队友活不了的群居动物',
+    lowText: '独立性强，能单飞',
+  },
+]
+
+const GENDER_SCORE_CONFIGS = [
+  {
+    key: 'seaKingScore', label: '海王浓度', icon: Waves, color: '#ec4899',
+    desc: '异性队友占比',
+    highText: '异性磁场爆表，海王预警 🔱',
+    lowText: '异性缘平平，比较安分',
+  },
+  {
+    key: 'sameSexScore', label: '同性相吸', icon: Church, color: '#8b5cf6',
+    desc: '同性队友占比',
+    highText: '清一色同性，异性绝缘体本缘',
+    lowText: '同性圈子一般',
+  },
+]
+
+function MetricBar({ cfg, val }) {
+  const { label, icon: Icon, color, desc, highText, lowText } = cfg
+  const isHigh = val >= 55
+  return (
+    <div className="p-3.5 rounded-2xl card">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <Icon className="w-4 h-4" style={{ color }} />
+          <span className="text-sm font-semibold text-slate-700">{label}</span>
+          <span className="text-xs text-slate-400">— {desc}</span>
+        </div>
+        <span className="text-sm font-bold" style={{ color }}>{val}</span>
+      </div>
+      <div className="score-bar">
+        <div className="score-bar-fill" style={{ width: `${val}%`, background: `linear-gradient(90deg, ${color}99, ${color})` }} />
+      </div>
+      <p className="text-xs text-slate-400 mt-1.5">{isHigh ? highText : lowText}</p>
+    </div>
+  )
+}
+
+const MODE_COLORS = { solo: '#38bdf8', flex: '#22c55e', aram: '#f59e0b', other: '#cbd5e1' }
+
+function ModeDistribution({ modeStats }) {
+  const order = ['solo', 'flex', 'aram', 'other']
+  const max = Math.max(1, ...order.map(k => modeStats[k]?.count || 0))
+  return (
+    <div className="p-4 rounded-2xl card">
+      <h4 className="text-sm font-bold text-slate-700 mb-3">🎮 模式分布</h4>
+      {order.filter(k => modeStats[k]?.count > 0).map(k => (
+        <div key={k} className="flex items-center gap-2 mb-2.5">
+          <span className="text-xs text-slate-500 w-16 shrink-0">{QUEUE_LABELS[k]}</span>
+          <div className="flex-1 score-bar">
+            <div className="score-bar-fill" style={{
+              width: `${(modeStats[k].count / max) * 100}%`,
+              background: MODE_COLORS[k],
+            }} />
+          </div>
+          <span className="text-xs text-slate-500 w-20 text-right shrink-0">
+            {modeStats[k].count}场 · 胜{modeStats[k].winRate}%
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default function CharacterAnalysis({ scores, personality, modeStats, genderStats, hasGenderData, summonerName }) {
   return (
     <div className="space-y-6">
       {/* Archetype Header */}
@@ -116,6 +201,70 @@ export default function CharacterAnalysis({ scores, personality, summonerName })
             </div>
           )
         })}
+      </div>
+
+      {/* —— 模式人格 —— */}
+      <div className="pt-2">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="h-px flex-1 bg-pink-100" />
+          <span className="text-xs font-bold text-slate-400">模式人格 · 抽象鉴定</span>
+          <span className="h-px flex-1 bg-pink-100" />
+        </div>
+
+        {/* 模式称号 */}
+        {personality.modeTitle && (
+          <div className="text-center p-5 rounded-2xl card-soft mb-4 animate-pop">
+            <div className="text-4xl mb-2">{personality.modeTitle.emoji}</div>
+            <h3 className="text-xl font-bold text-gradient mb-1">{personality.modeTitle.name}</h3>
+            <p className="text-sm text-slate-500">{personality.modeTitle.desc}</p>
+          </div>
+        )}
+
+        {modeStats && <ModeDistribution modeStats={modeStats} />}
+
+        <div className="space-y-3 mt-3">
+          {MODE_SCORE_CONFIGS.map(cfg => (
+            <MetricBar key={cfg.key} cfg={cfg} val={scores[cfg.key]} />
+          ))}
+        </div>
+      </div>
+
+      {/* —— 性别衍生指标 —— */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="h-px flex-1 bg-pink-100" />
+          <span className="text-xs font-bold text-slate-400">性别 × 战绩 · 衍生指标</span>
+          <span className="h-px flex-1 bg-pink-100" />
+        </div>
+        {hasGenderData ? (
+          <>
+            {personality.seaKingRating && (
+              <div className="text-center p-4 rounded-2xl card-soft mb-3">
+                <div className="text-3xl mb-1">{personality.seaKingRating.emoji}</div>
+                <div className={`text-lg font-bold ${personality.seaKingRating.color}`}>
+                  {personality.seaKingRating.level}
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  异性队友 {genderStats.oppositeCount} 人次 · 同性 {genderStats.sameCount} 人次
+                </p>
+              </div>
+            )}
+            <div className="space-y-3">
+              {GENDER_SCORE_CONFIGS.map(cfg => (
+                <MetricBar key={cfg.key} cfg={cfg} val={scores[cfg.key]} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-center">
+            <p className="text-sm text-slate-400">
+              「海王浓度」等性别指标需要性别数据 👀
+            </p>
+            <p className="text-xs text-slate-300 mt-1">
+              请在查询时选择「TA 的性别」（演示模式可见效果；外服真实数据暂无队友性别）
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Verdict */}
